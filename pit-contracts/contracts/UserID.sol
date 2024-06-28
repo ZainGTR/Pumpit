@@ -48,7 +48,8 @@ contract UserID {
         names[_username] = true;
     }
 
-    /// @notice Update a new user
+    /// @notice Update a user nftId
+    /// @param _nftId the nft_id the user want to use as profile picture.
     function updateUser(uint256 _nftId) external onlyValidAddress(msg.sender) {
         require(users[msg.sender].userAddress == msg.sender, "User is not registered");
         users[msg.sender].nftId = _nftId;
