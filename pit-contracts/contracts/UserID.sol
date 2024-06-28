@@ -28,16 +28,24 @@ contract UserID {
         _;
     }
 
+    /// @notice Check if the username is unique
+    /// @param _username The username to check
+    /// @return bool indicating whether the username is unique
+    function checkUsernameUniqueness(string memory _username) public view returns (bool) {
+        return !names[_username];
+    }
+
     /// @notice Register a new user
     /// @param _username The username for the new user
     /// @param _nftId The nft image the new user want to use as profile picture.
     function registerUser(string memory _username, uint256 _nftId) external onlyValidAddress(msg.sender) {
         require(users[msg.sender].userAddress == address(0), "User already registered");
-        // todo check if the name is taken
+        require(checkUsernameUniqueness(_username), "Username already taken");
         users[msg.sender].userAddress = msg.sender;
         users[msg.sender].reputationPoints = 0;
-        users[msg.sender].username = _username; // check if the name exist first
+        users[msg.sender].username = _username; 
         users[msg.sender].nftId = _nftId;
+        names[_username] = true;
     }
 
     /// @notice Update a new user
