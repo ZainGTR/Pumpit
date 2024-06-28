@@ -3,7 +3,7 @@ pragma solidity ^0.8.9;
 
 /// @title Pump It Account Contract
 /// @notice This contract manages user accounts, reputation points, followers, and public posts.
-contract PumpItAccount {
+contract UserID {
     struct User {
         address userAddress;
         string username;
@@ -29,6 +29,8 @@ contract PumpItAccount {
     }
 
     /// @notice Register a new user
+    /// @param _username The username for the new user
+    /// @param _nftId The nft image the new user want to use as profile picture.
     function registerUser(string memory _username, uint256 _nftId) external onlyValidAddress(msg.sender) {
         require(users[msg.sender].userAddress == address(0), "User already registered");
         // todo check if the name is taken
