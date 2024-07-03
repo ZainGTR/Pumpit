@@ -1,7 +1,7 @@
 "use client";
 import { client } from "@/app/client";
 import { defineChain } from "thirdweb";
-import { ConnectButton } from "thirdweb/react";
+import { ConnectButton, lightTheme } from "thirdweb/react";
 import { createWallet, walletConnect } from "thirdweb/wallets";
 
 const ConnectComponent = () => {
@@ -19,7 +19,11 @@ const ConnectComponent = () => {
       <ConnectButton
         client={client}
         wallets={wallets}
-        theme={"light"}
+        theme={lightTheme({
+          colors: {
+            primaryButtonBg: "#64748b",
+          },
+        })}
         chain={chainId}
         connectModal={{
           size: "compact",
