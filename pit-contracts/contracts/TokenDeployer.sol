@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.26;
 
 import "./Swap.sol";
+import "./Vault.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 
@@ -11,14 +12,17 @@ contract TokenDeployer {
     using SafeMath for uint256;
 
     uint256 public fixedFee = 0.025 ether; // small creation fees to support pumpit devs and limit spams.
+    uint256 devRate = 33333333;
     uint256 constant DEFAULT_SUPPLY = 1000000000 ether;
+    address dev;
 
-    event TokenCreated(address indexed tokenAddress, address indexed creator, uint256 devTokens, uint256 totalTokens);
+    event TokenCreated(address indexed tokenAddress, address indexed creator, uint256 devTokens, uint256 totalTokens, address vault, address dex, address community);
 
     struct TokenInfo {
         address tokenAddress;
         address creator;
         address vault;
+        address dexAddress;
         address community;
         uint256 totalTokens;
         uint256 devTokens;
@@ -27,73 +31,36 @@ contract TokenDeployer {
     mapping(address => TokenInfo[]) public userTokens;
 
     constructor() {
-        
+        dev = msg.sender;
     }
 
     /// @notice Creates a new ERC20 token
     /// We assume that all the ethers send by the creator represent the amount of tokens allocated to the developer (max 10% of totalTokens)
     /// @param name The name of the token
     /// @param symbol The symbol of the token
-    /// @param lockTokens If true, tokens will be locked
     function createToken(
         string memory name,
-        string memory symbol,
-        uint256 devTokens,
-        bool lockTokens,
-        uint256 lockParams
-    ) external payable {
+        string memory symbol
+    ) external payable returns (address){
         require(msg.value >= fixedFee, "Insufficient fee");
         uint256 devTokenValue = msg.value - fixedFee; // We send the rest to the dex contract
-        
-        uint256 availableTokens = DEFAULT_SUPPLY - devTokens;
-        
-
-        TokenSwap newToken = new TokenSwap(name, symbol, DEFAULT_SUPPLY, msg.sender);
-        address tokenAddress = address(newToken);
-
-        if (lockTokens) {
-            // Mint tokens to a lock contract
-            newToken.mint(dexContract, devTokens);
-        } 
-        // Mint tokens to the DEX contract
-        newToken.mint(dexContract, availableTokens);
-        newToken.mint(msg.sender, userTokensAmount);
+        payable(dev).transfer(fixedFee);
+               
+        TokenSwap newToken = new TokenSwap {value:devTokenValue} (name, symbol, DEFAULT_SUPPLY, msg.sender);
+        address tokenAddress = newToken.getTokenAddress();
+        address dexAddress = address(newToken);
+        uint256 devTokens = devTokenValue.mul(devRate);
+               
         
 
-        userTokens[msg.sender].push(TokenInfo(tokenAddress, msg.sender, totalTokens, lockTokens));
-        emit TokenCreated(tokenAddress, msg.sender, totalTokens, lockTokens);
+        userTokens[msg.sender].push(TokenInfo(tokenAddress, msg.sender, address(0), dexAddress, address(0), DEFAULT_SUPPLY, devTokens));
+        emit TokenCreated(tokenAddress, msg.sender, devTokens, DEFAULT_SUPPLY, address(0), dexAddress, address(0));
+
+        return dexAddress;
+    }
+
+    function getUserTokens (address owner) public view returns (TokenInfo[] memory) {
+        return userTokens[owner];
     }
 }
 
-/// @title ERC20 Token with custom rules
-contract TokenSwapContract is TokenSwap {
-    address public dev;
-    uint256 public immutable totalTokens;
-
-    constructor(
-        string memory name,
-        string memory symbol,
-        uint256 _totalTokens,
-        address _dev
-    ) ERC20(name, symbol) {
-        dev = _dev;
-        totalTokens = _totalTokens;
-        _mint(dev, _totalTokens / 10); // Mint dev tokens
-    }
-
-    /// @notice Mint tokens to a specified address
-    /// @param to The address to mint tokens to
-    /// @param amount The amount of tokens to mint
-    function mint(address to, uint256 amount) external {
-        require(msg.sender == dev, "Only dev can mint");
-        _mint(to, amount);
-    }
-
-    /// @notice Mint tokens to a lock contract
-    /// @param lockContract The address of the lock contract
-    /// @param amount The amount of tokens to mint
-    function mintToLockContract(address lockContract, uint256 amount) external {
-        require(msg.sender == dev, "Only dev can mint to lock contract");
-        _mint(lockContract, amount);
-    }
-}

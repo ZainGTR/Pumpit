@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.26;
 
 /// @title Pump It Account Contract
 /// @notice This contract manages user accounts, reputation points, followers, and public posts.

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.26;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "./ERC20Token.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 /// @title TokenSwap Contract
@@ -13,6 +13,7 @@ contract TokenSwap {
 
     ERC20Token public token;
     bool public swapEnabled;
+    uint256 initRate = 33333333;
     
 
     event TokenCreated(address indexed tokenAddress, uint256 totalTokens);
@@ -25,12 +26,16 @@ contract TokenSwap {
         _;
     }
 
-    constructor(string memory name, string memory symbol, uint256 totalTokens, address _creator) {
+    constructor(string memory name, string memory symbol, uint256 totalTokens, address _creator) payable {
         token = new ERC20Token(name, symbol, totalTokens, address(this), _creator);
         swapEnabled = true;
         emit TokenCreated(address(token), totalTokens);
         // make first buy (dev buy order)
-        
+        if (msg.value > 0) {
+            uint256 ethAmount = msg.value;
+            uint256 devTokens = ethAmount.mul(33333333);
+            token.transfer(_creator, devTokens);
+        }
     }
 
     /// @notice Swaps ETH for tokens
@@ -40,7 +45,6 @@ contract TokenSwap {
         require(token.balanceOf(address(this)) >= tokensToReceive, "Not enough tokens in the contract");
         token.transfer(msg.sender, tokensToReceive);
         emit EthToTokenSwapped(msg.sender, msg.value, tokensToReceive);
-
         if (address(this).balance >= MAX_ETH_BALANCE) {
             swapEnabled = false;
             triggerUpgrade();
@@ -90,19 +94,10 @@ contract TokenSwap {
         return tokenAmount.mul(ethReserve).div(tokenReserve);
     }
 
+    function getTokenAddress() public view  returns (address) {
+        return address(token);
+    }
+
 }
 
-/// @title ERC20 Token
-contract ERC20Token is ERC20 {
-    address public creator;
-    constructor(
-        string memory name,
-        string memory symbol,
-        uint256 _totalTokens,
-        address swapContract,
-        address _creator
-    ) ERC20(name, symbol) {
-        _mint(swapContract, _totalTokens); // Mint all tokens to the swap contract
-        creator = _creator;
-    }
-}
+

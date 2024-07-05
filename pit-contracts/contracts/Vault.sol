@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.26;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
@@ -33,7 +33,7 @@ contract Vault {
         owner = msg.sender;
         lockPeriod = period;
         lockEndTime = block.timestamp.add(lockPeriod);
-        lockedAmount = amount;
+        lockedAmount = amount * 86400; // amount in days
 
         require(token.transferFrom(msg.sender, address(this), amount), "Token transfer failed");
 
