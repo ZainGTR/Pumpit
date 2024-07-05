@@ -13,6 +13,7 @@ contract TokenSwap {
 
     ERC20Token public token;
     bool public swapEnabled;
+    
 
     event TokenCreated(address indexed tokenAddress, uint256 totalTokens);
     event EthToTokenSwapped(address indexed user, uint256 ethAmount, uint256 tokenAmount);
@@ -24,10 +25,12 @@ contract TokenSwap {
         _;
     }
 
-    constructor(string memory name, string memory symbol, uint256 totalTokens) {
-        token = new ERC20Token(name, symbol, totalTokens, address(this));
+    constructor(string memory name, string memory symbol, uint256 totalTokens, address _creator) {
+        token = new ERC20Token(name, symbol, totalTokens, address(this), _creator);
         swapEnabled = true;
         emit TokenCreated(address(token), totalTokens);
+        // make first buy (dev buy order)
+        
     }
 
     /// @notice Swaps ETH for tokens
@@ -89,14 +92,17 @@ contract TokenSwap {
 
 }
 
-/// @title ERC20 Token with custom rules
+/// @title ERC20 Token
 contract ERC20Token is ERC20 {
+    address public creator;
     constructor(
         string memory name,
         string memory symbol,
         uint256 _totalTokens,
-        address swapContract
+        address swapContract,
+        address _creator
     ) ERC20(name, symbol) {
         _mint(swapContract, _totalTokens); // Mint all tokens to the swap contract
+        creator = _creator;
     }
 }

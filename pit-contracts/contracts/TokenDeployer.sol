@@ -1,37 +1,33 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "./Swap.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+
 
 /// @title PumpIt Token Deployer Contract
 /// @notice This contract allows users to create ERC20 tokens with specific rules.
 contract TokenDeployer {
     using SafeMath for uint256;
 
-    address public dexContract;
-    address public vaultContract;
-    address public RewardContract;
-
-
     uint256 public fixedFee = 0.025 ether; // small creation fees to support pumpit devs and limit spams.
     uint256 constant DEFAULT_SUPPLY = 1000000000 ether;
-    uint256 constant MAX_DEV_SUPPLY = 100000000 ether;
 
-    event TokenCreated(address indexed tokenAddress, address indexed creator, uint256 devTokens, uint256 totalTokens, bool locked);
+    event TokenCreated(address indexed tokenAddress, address indexed creator, uint256 devTokens, uint256 totalTokens);
 
     struct TokenInfo {
         address tokenAddress;
         address creator;
+        address vault;
+        address community;
         uint256 totalTokens;
         uint256 devTokens;
-        bool locked;
     }
 
     mapping(address => TokenInfo[]) public userTokens;
 
-    constructor(address _dexContract) {
-        dexContract = _dexContract;
+    constructor() {
+        
     }
 
     /// @notice Creates a new ERC20 token
@@ -46,14 +42,13 @@ contract TokenDeployer {
         bool lockTokens,
         uint256 lockParams
     ) external payable {
-        require(devTokens <= MAX_DEV_SUPPLY, "Dev tokens cannot exceed 10% of total supply");
         require(msg.value >= fixedFee, "Insufficient fee");
         uint256 devTokenValue = msg.value - fixedFee; // We send the rest to the dex contract
         
         uint256 availableTokens = DEFAULT_SUPPLY - devTokens;
         
 
-        ERC20Token newToken = new ERC20Token(name, symbol, DEFAULT_SUPPLY, msg.sender);
+        TokenSwap newToken = new TokenSwap(name, symbol, DEFAULT_SUPPLY, msg.sender);
         address tokenAddress = address(newToken);
 
         if (lockTokens) {
@@ -71,7 +66,7 @@ contract TokenDeployer {
 }
 
 /// @title ERC20 Token with custom rules
-contract ERC20Token is ERC20 {
+contract TokenSwapContract is TokenSwap {
     address public dev;
     uint256 public immutable totalTokens;
 
