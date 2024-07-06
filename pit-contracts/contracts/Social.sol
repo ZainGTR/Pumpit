@@ -3,7 +3,7 @@ pragma solidity ^0.8.26;
 
 /// @title Pump It Account Contract
 /// @notice This contract manages user accounts, reputation points, followers, and public posts.
-contract UserID {
+contract Social {
     struct User {
         address userAddress;
         string username;

@@ -20,9 +20,9 @@ const Navbar = () => {
               alt="HomePage"
               className="w-4 h-4"
             />{" "}
-            <span>Home</span>
+            <span>Tokens</span>
           </Link>
-          <Link href="/" className="flex gap-2 items-center">
+          <Link href="/addnew" className="flex gap-2 items-center">
             {" "}
             <Image
               src="/home.png"
@@ -31,7 +31,7 @@ const Navbar = () => {
               alt="HomePage"
               className="w-4 h-4"
             />{" "}
-            <span>Home</span>
+            <span>Create Token</span>
           </Link>
         </div>
         <div className="hidden lg:flex p-2 bg-slate-200 items-center rounded-lg">
