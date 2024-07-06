@@ -28,14 +28,14 @@ contract Vault {
         _;
     }
 
-    constructor(address tokenAddress, uint256 amount, uint256 period) {
+    constructor(address tokenAddress, address ownerAddress, uint256 amount, uint256 period) {
         token = IERC20(tokenAddress);
-        owner = msg.sender;
-        lockPeriod = period;
+        owner = ownerAddress;
+        lockPeriod = period * 86400; // period in days
         lockEndTime = block.timestamp.add(lockPeriod);
-        lockedAmount = amount * 86400; // amount in days
+        lockedAmount = amount; 
 
-        require(token.transferFrom(msg.sender, address(this), amount), "Token transfer failed");
+        
 
         emit TokensLocked(tokenAddress, msg.sender, amount, lockPeriod);
     }
