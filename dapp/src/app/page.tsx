@@ -1,3 +1,4 @@
+import TopTokens from "@/components/Home/TopTokens";
 import TokenList from "@/components/TokenList";
 import Image from "next/image";
 
@@ -5,8 +6,10 @@ export default function Home() {
   return (
     <div className="">
       {/* TOP */}
-      <div className="w-full flex flex-col items-center gap-4">
-        <div>TOP tokens</div>
+      <div className="w-full flex flex-col items-center gap-4 p-4">
+        <div>
+          <TopTokens />
+        </div>
         <div>growing fast tokens</div>
         <div>sponsored tokens</div>
         <div>recently created tokens</div>

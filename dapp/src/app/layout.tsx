@@ -20,7 +20,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <ThirdwebProvider>
-          <div className="w-full bg-white px-4 md:px-6 lg:px-12 xl:px-24 2xl:px-48">
+          <div className="w-full bg-white px-4 md:px-6 lg:px-12 xl:px-24 2xl:px-48 shadow-md">
             <Navbar />
           </div>
           <div className="bg-slate-100 px-4 md:px-6 lg:px-12 xl:px-24 2xl:px-48">

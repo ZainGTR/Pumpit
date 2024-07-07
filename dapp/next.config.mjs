@@ -5,6 +5,14 @@ const nextConfig = {
     config.externals.push("pino-pretty", "lokijs", "encoding");
     return config;
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "ipfs.todo.later",
+      },
+    ],
+  },
 };
 
 export default nextConfig;
