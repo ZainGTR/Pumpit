@@ -1,7 +1,13 @@
 import Image from "next/image";
+import Interaction from "./PostComp/Interaction";
+import Comments from "./PostComp/Comments";
 
 const postData = {
   username: "Banana Token",
+  upvote: 556,
+  downvote: 2,
+  comments: 65,
+  hasImage: true,
   userImage: "/tokens/meme3.png",
   postText:
     "Checkout our last meme update, Smart trade with every transactions in the blockchain",
@@ -28,7 +34,11 @@ const Post = () => {
         </div>
       </div>
       <div className="flex flex-col gap-4">
-        <div className="w-full relative min-h-96">
+        <div
+          className={
+            postData.hasImage ? "w-full relative  min-h-96" : "w-full relative"
+          }
+        >
           <Image
             src={postData.image}
             alt=""
@@ -38,7 +48,11 @@ const Post = () => {
         </div>
         <p>{postData.postText}</p>
       </div>
-      <div>interactions</div>
+      <Interaction
+        votes={postData.upvote - postData.downvote}
+        comments={postData.comments}
+      />
+      <Comments />
     </div>
   );
 };
