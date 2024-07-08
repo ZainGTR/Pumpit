@@ -48,10 +48,12 @@ const Post = () => {
         </div>
         <p>{postData.postText}</p>
       </div>
-      <Interaction
-        votes={postData.upvote - postData.downvote}
-        comments={postData.comments}
-      />
+      <div className="flex items-center justify-between text-sm my-4">
+        <div className="flex gap-8">
+          <Interaction count={postData.upvote} icon="/like.png" />
+          <Interaction count={postData.comments} icon="/comment.png" />
+        </div>
+      </div>
       <Comments />
     </div>
   );
