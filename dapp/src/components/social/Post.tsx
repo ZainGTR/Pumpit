@@ -7,6 +7,8 @@ const postData = {
   upvote: 556,
   downvote: 2,
   comments: 65,
+  share: 13,
+  views: 6554,
   hasImage: true,
   userImage: "/tokens/meme3.png",
   postText:
@@ -52,6 +54,10 @@ const Post = () => {
         <div className="flex gap-8">
           <Interaction count={postData.upvote} icon="/like.png" />
           <Interaction count={postData.comments} icon="/comment.png" />
+          <Interaction count={postData.share} icon="/share.png" />
+        </div>
+        <div>
+          <Interaction count={postData.views} icon="/people.png" />
         </div>
       </div>
       <Comments />
