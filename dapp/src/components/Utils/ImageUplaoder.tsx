@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 import React, { useState } from "react";
 
@@ -11,7 +12,6 @@ const ImageUplaoder = () => {
         type="file"
         accept="image/*"
         className="w-full h-full opacity-0 cursor-pointer"
-        onChange={(e) => setImageFile(e.target.files?[0])}
       />
     </div>
   );

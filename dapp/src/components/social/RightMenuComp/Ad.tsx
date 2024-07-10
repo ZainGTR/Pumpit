@@ -6,7 +6,7 @@ const Ad = () => {
       <span className="text-gray-500 font-medium">Sponsored Ads</span>
       <div className="">
         <Image
-          src="/tokens/meme post.png"
+          src="/tokens/ad.jpg"
           alt=""
           width={288}
           height={384}

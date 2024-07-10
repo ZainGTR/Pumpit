@@ -20,12 +20,23 @@ const Navbar = () => {
               alt="HomePage"
               className="w-4 h-4"
             />{" "}
-            <span>Tokens</span>
+            <span>Home</span>
+          </Link>
+          <Link href="/community" className="flex gap-2 items-center">
+            {" "}
+            <Image
+              src="/groups.png"
+              width={16}
+              height={16}
+              alt="HomePage"
+              className="w-4 h-4"
+            />{" "}
+            <span>Community</span>
           </Link>
           <Link href="/addnew" className="flex gap-2 items-center">
             {" "}
             <Image
-              src="/home.png"
+              src="/stories.png"
               width={16}
               height={16}
               alt="HomePage"

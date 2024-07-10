@@ -1,6 +1,4 @@
-"use client";
 import ImageUplaoder from "@/components/Utils/ImageUplaoder";
-import Image from "next/image";
 
 const CreateToken = () => {
   return (
