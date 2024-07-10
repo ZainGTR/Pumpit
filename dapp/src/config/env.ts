@@ -1,0 +1,12 @@
+export const GRPC_URL = process.env.NEXT_PUBLIC_GRPC_URL;
+export const GREENFIELD_RPC_URL = process.env.NEXT_PUBLIC_GREENFIELD_RPC_URL;
+export const GREEN_CHAIN_ID = 5600;
+export const BSC_RPC_URL = process.env.NEXT_PUBLIC_BSC_RPC_URL;
+export const BSC_CHAIN_ID = 97;
+export const GF_SECRET = process.env.NEXT_PUBLIC_GF_SECRET;
+export const GF_BUCKET = process.env.NEXT_PUBLIC_GF_BUCKET;
+export const GF_ADDRESS = process.env.NEXT_PUBLIC_GF_ADDRESS;
+export const AI_API = process.env.NEXT_PUBLIC_AI_API;
+export const AI_API_SECRET = process.env.NEXT_PUBLIC_AI_API_SECRET;
+export const AI_API_BASE_URL = process.env.NEXT_PUBLIC_AI_API_BASE_URL;
+export const AI_API_MODEL_ID = process.env.NEXT_PUBLIC_AI_API_MODEL_ID;
