@@ -9,7 +9,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "ipfs.todo.later",
+        hostname: "res.cloudinary.com",
       },
     ],
   },
