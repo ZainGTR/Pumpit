@@ -1,18 +1,147 @@
 import TopTokens from "@/components/Home/TopTokens";
+import Post from "@/components/social/Post";
+import Postmini from "@/components/social/Postmini";
 import TokenList from "@/components/TokenList";
 import Image from "next/image";
 
 export default function Home() {
+  const winners = [
+    {
+      image: "/tokens/meme1.png",
+      marketcap: 5564,
+      price: 0.0015,
+      growth: 142,
+      pair: "GGT/frxETH",
+    },
+    {
+      image: "/tokens/meme2.png",
+      marketcap: 4221,
+      price: 0.0267,
+      growth: 230,
+      pair: "BAC/frxETH",
+    },
+    {
+      image: "/tokens/meme3.png",
+      marketcap: 3644,
+      price: 0.054,
+      growth: 600,
+      pair: "SWC/frxETH",
+    },
+    {
+      image: "/tokens/meme4.png",
+      marketcap: 2566,
+      price: 0.00122,
+      growth: 410,
+      pair: "WDS/frxETH",
+    },
+    {
+      image: "/tokens/meme5.png",
+      marketcap: 2401,
+      price: 0.02564,
+      growth: 250,
+      pair: "RFG/frxETH",
+    },
+  ];
+
+  const loosers = [
+    {
+      image: "/tokens/meme1.png",
+      marketcap: 5564,
+      price: 0.0002,
+      growth: -300,
+      pair: "GGT/frxETH",
+    },
+    {
+      image: "/tokens/meme2.png",
+      marketcap: 4221,
+      price: 0.0067,
+      growth: -230,
+      pair: "BAC/frxETH",
+    },
+    {
+      image: "/tokens/meme3.png",
+      marketcap: 3644,
+      price: 0.014,
+      growth: -600,
+      pair: "SWC/frxETH",
+    },
+    {
+      image: "/tokens/meme4.png",
+      marketcap: 2566,
+      price: 0.00082,
+      growth: -410,
+      pair: "WDS/frxETH",
+    },
+    {
+      image: "/tokens/meme5.png",
+      marketcap: 2401,
+      price: 0.00564,
+      growth: -250,
+      pair: "RFG/frxETH",
+    },
+  ];
+
+  const recent = [
+    {
+      image: "/tokens/meme1.png",
+      marketcap: 5564,
+      price: 0.0015,
+      growth: 142,
+      pair: "GGT/frxETH",
+    },
+    {
+      image: "/tokens/meme2.png",
+      marketcap: 4221,
+      price: 0.0267,
+      growth: -5,
+      pair: "BAC/frxETH",
+    },
+    {
+      image: "/tokens/meme3.png",
+      marketcap: 3644,
+      price: 0.054,
+      growth: 600,
+      pair: "SWC/frxETH",
+    },
+    {
+      image: "/tokens/meme4.png",
+      marketcap: 2566,
+      price: 0.00122,
+      growth: -25,
+      pair: "WDS/frxETH",
+    },
+    {
+      image: "/tokens/meme5.png",
+      marketcap: 2401,
+      price: 0.02564,
+      growth: 250,
+      pair: "RFG/frxETH",
+    },
+  ];
+
   return (
     <div className="">
       {/* TOP */}
       <div className="w-full flex flex-col items-center gap-4 p-4">
-        <div>
-          <TopTokens />
+        {/* stats */}
+        <div className="flex items-center gap-4 text-sm">
+          <p>Tokens: 995</p>
+          <p>Volume: 6,552,104,201 USD </p>
+          <p>24H: 3,365,120 USD</p>
+          <p>7 Days: 18,249,962 USD</p>
         </div>
-        <div>growing fast tokens</div>
-        <div>sponsored tokens</div>
-        <div>recently created tokens</div>
+        {/* stats */}
+        <div className="flex items-center gap-8">
+          <TopTokens title="Winners" tokens={winners} />
+          <TopTokens title="Loosers" tokens={loosers} />
+          <TopTokens title="Recent" tokens={recent} />
+        </div>
+        <div className="flex items-center gap-8">
+          <Postmini />
+          <Postmini />
+          <Postmini />
+          <Postmini />
+        </div>
         <div>
           <div className="flex p-2 bg-slate-200 items-center rounded-lg lg:hidden">
             <input
@@ -27,9 +156,6 @@ export default function Home() {
       {/* TOP */}
       {/* BOT */}
       <div className="flex flex-col items-center gap-8">
-        {/* stats */}
-        <div className="">stats</div>
-        {/* stats */}
         {/* Token list */}
         <div className="">
           <TokenList />

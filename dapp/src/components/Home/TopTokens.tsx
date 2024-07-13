@@ -1,45 +1,62 @@
 import Image from "next/image";
+import Link from "next/link";
 
-const token = [
-  {
-    image: "/tokens/meme1.png",
-    marketcap: 5564,
-  },
-  {
-    image: "/tokens/meme2.png",
-    marketcap: 4221,
-  },
-  {
-    image: "/tokens/meme3.png",
-    marketcap: 3644,
-  },
-  {
-    image: "/tokens/meme4.png",
-    marketcap: 2566,
-  },
-  {
-    image: "/tokens/meme5.png",
-    marketcap: 2401,
-  },
-];
+type info = {
+  image: string;
+  marketcap: number;
+  price: number;
+  growth: number;
+  pair: string;
+};
 
-const TopTokens = () => {
+const TopTokens = (props: { title: string; tokens: info[] }) => {
   return (
     <div className="p-6 bg-white rounded-lg shadow-md text-sm">
-      <div className="flex gap-8 w-max">
-        {token.map((token) => (
+      <div className="flex flex-col gap-4 w-max">
+        <div className="flex justify-between items-center">
+          <p>{props.title}</p>
+          <Link href="">More..</Link>
+        </div>
+        {props.tokens.map((token) => (
           <div
             key={token.marketcap}
-            className="flex flex-col gap-2 cursor-pointer items-center font-bold"
+            className="flex gap-2 cursor-pointer items-center font-bold justify-between"
           >
             <Image
               src={token.image}
               alt=""
-              width={80}
-              height={80}
-              className="w-20 h-20 rounded-full ring-2"
+              width={24}
+              height={24}
+              className="w-6 h-6 rounded-full ring-2"
             />
-            <span>{token.marketcap}k USD</span>
+            <span className="text-gray-600">{token.pair}</span>
+            <span
+              className={`${
+                token.growth > 1
+                  ? "text-green-500 font-normal"
+                  : "text-red-500 font-normal"
+              }`}
+            >
+              {token.price} USD
+            </span>
+            <span
+              className={`${
+                token.growth > 1
+                  ? "text-green-500 font-normal"
+                  : "text-red-500 font-normal"
+              }`}
+            >
+              {token.growth}%
+            </span>
+            <span
+              className={`${
+                token.growth > 1
+                  ? "text-green-500 font-normal"
+                  : "text-red-500 font-normal"
+              }`}
+            >
+              {token.marketcap}k USD
+            </span>
           </div>
         ))}
       </div>
