@@ -13,12 +13,36 @@ entity page {
 
 entity follower {
   index page;
-  index follower: page;
-  key user, follower;
+  index follower: user;
+  key page, follower;
 }
 
 entity post {
   timestamp = op_context.last_block_time;
   index page;
   content: text;
+}
+
+operation create_user(name, pubkey) {
+    create user(name, pubkey);
+}
+
+operation create_page(ticker:name, name, pubkey) {
+    create page(ticker, name, pubkey);
+}
+
+operation make_post(page_id: byte_array, content: text) {
+    create post(
+        page @ { page_id },
+        content
+    );
+}
+
+operation follow_user(user_id: byte_array, page_id: byte_array) {
+    val user = user @ { user_id };
+    val page = page @ { page_id };
+    create follower(
+        page = page,
+        follower = user
+    );
 }
