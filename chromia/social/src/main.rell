@@ -46,3 +46,9 @@ operation follow_user(user_id: byte_array, page_id: byte_array) {
         follower = user
     );
 }
+
+operation unfollow_user(user_id: byte_array, unfollow_id: byte_array) {
+  val user = user @ { user_id };
+  val unfollow = page @ { unfollow_id };
+  delete follower @? { .page == unfollow, .follower == user };
+}

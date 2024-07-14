@@ -1,0 +1,35 @@
+@test module;
+
+import main.*;
+
+val user = rell.test.pubkeys.alice;
+val page = rell.test.pubkeys.bob;
+
+function test_create_entities() {
+    // Test the creation of two users: Alice and Bob
+    rell.test.tx()
+        .op(create_user("Alice", user))
+        .op(create_user("Bob", page))
+        .op(create_page("CCC", "MemeCoin", page))
+        .run();
+
+    // Check if there are two users in the user table
+    assert_equals(user @ { } (@sum 1), 2);
+    assert_equals(page @ { } (@sum 1), 1);
+
+    // Alice follows Bob and makes a post
+    rell.test.tx()
+        .op(follow_user(user, page))
+        .op(make_post(page, "My post"))
+        .run();
+
+    // Check if there is one follower and one post
+    assert_equals(follower @ { } (@sum 1), 1);
+    assert_equals(post @ { } (@sum 1), 1);
+
+    // Alice unfollows Bob and no followers should now exist
+        rell.test.tx()
+        .op(unfollow_user(user, page))
+        .run();
+    assert_equals(follower @ { } (@sum 1), 0);
+}
