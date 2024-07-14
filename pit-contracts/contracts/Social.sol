@@ -2,24 +2,31 @@
 pragma solidity ^0.8.26;
 
 /// @title Pump It Account Contract
-/// @notice This contract manages user accounts, reputation points, followers, and public posts.
+/// @notice This contract manages user accounts, reputation points, and links to off-chain data.
 contract Social {
     struct User {
-        address userAddress;
         string username;
         uint256 nftId;
         uint256 reputationPoints;
-        address[] createdTokens;
-        address[] followers;
-        string[] publicPosts;
+        string externalDataHash; // Hash or URL pointing to the off-chain data
+    }
+
+    struct Page {
+        string ticker;
+        string tokenName;
+        uint256 nftId;
+        uint256 reputationPoints;
+        string externalDataHash; // Hash or URL pointing to the off-chain data
     }
 
     mapping(address => User) public users;
+    mapping(address => Page) public pages;
     mapping(string => bool) public names;
+    mapping(string => bool) public tickers;
 
     // Modifiers
     modifier onlyUser() {
-        require(users[msg.sender].userAddress == msg.sender, "Not a registered user");
+        require(bytes(users[msg.sender].username).length != 0, "Not a registered user");
         _;
     }
 
@@ -35,43 +42,35 @@ contract Social {
         return !names[_username];
     }
 
+    /// @notice Check if the ticker is unique
+    /// @param _ticker The ticker to check
+    /// @return bool indicating whether the ticker is unique
+    function checkTickerUniqueness(string memory _ticker) public view returns (bool) {
+        return !tickers[_ticker];
+    }
+
     /// @notice Register a new user
     /// @param _username The username for the new user
     /// @param _nftId The nft image the new user want to use as profile picture.
-    function registerUser(string memory _username, uint256 _nftId) external onlyValidAddress(msg.sender) {
-        require(users[msg.sender].userAddress == address(0), "User already registered");
+    function registerUser(string memory _username, uint256 _nftId, string memory _externalDataHash) external onlyValidAddress(msg.sender) {
+        require(bytes(users[msg.sender].username).length == 0, "User already registered");
         require(checkUsernameUniqueness(_username), "Username already taken");
-        users[msg.sender].userAddress = msg.sender;
-        users[msg.sender].reputationPoints = 0;
-        users[msg.sender].username = _username; 
-        users[msg.sender].nftId = _nftId;
+
+        users[msg.sender] = User({
+            username: _username,
+            nftId: _nftId,
+            reputationPoints: 0,
+            externalDataHash: _externalDataHash
+        });
+
         names[_username] = true;
     }
 
     /// @notice Update a user nftId
     /// @param _nftId the nft_id the user want to use as profile picture.
-    function updateUser(uint256 _nftId) external onlyValidAddress(msg.sender) {
-        require(users[msg.sender].userAddress == msg.sender, "User is not registered");
+    function updateUser(uint256 _nftId, string memory _externalDataHash) external onlyValidAddress(msg.sender) onlyUser {
         users[msg.sender].nftId = _nftId;
-    }
-
-    /// @notice Add a new token created by the user
-    /// @param _tokenAddress The address of the created token
-    function addCreatedToken(address _tokenAddress) external onlyUser onlyValidAddress(_tokenAddress) {
-        // todo check if the user address is the same as the token dev
-        users[msg.sender].createdTokens.push(_tokenAddress);
-    }
-
-    /// @notice Add a follower to the user
-    /// @param _followerAddress The address of the follower
-    function addFollower(address _followerAddress) external onlyUser onlyValidAddress(_followerAddress) {
-        users[msg.sender].followers.push(_followerAddress);
-    }
-
-    /// @notice Add a public post by the user
-    /// @param _post The content of the public post
-    function addPublicPost(string calldata _post) external onlyUser {
-        users[msg.sender].publicPosts.push(_post);
+        users[msg.sender].externalDataHash = _externalDataHash;
     }
 
     /// @notice Get user details
@@ -81,24 +80,35 @@ contract Social {
         return users[_userAddress];
     }
 
-    /// @notice Get all created tokens of a user
-    /// @param _userAddress The address of the user
-    /// @return List of created token addresses
-    function getCreatedTokens(address _userAddress) external view onlyValidAddress(_userAddress) returns (address[] memory) {
-        return users[_userAddress].createdTokens;
+    /// @notice Register a new page
+    /// @param _ticker The ticker for the new page
+    /// @param _tokenName The token name for the new page
+    /// @param _nftId The nft image the new page wants to use as a profile picture
+    function registerPage(string memory _ticker, string memory _tokenName, uint256 _nftId, string memory _externalDataHash) external onlyValidAddress(msg.sender) {
+        require(checkTickerUniqueness(_ticker), "Ticker already taken");
+
+        pages[msg.sender] = Page({
+            ticker: _ticker,
+            tokenName: _tokenName,
+            nftId: _nftId,
+            reputationPoints: 0,
+            externalDataHash: _externalDataHash
+        });
+
+        tickers[_ticker] = true;
     }
 
-    /// @notice Get all followers of a user
-    /// @param _userAddress The address of the user
-    /// @return List of follower addresses
-    function getFollowers(address _userAddress) external view onlyValidAddress(_userAddress) returns (address[] memory) {
-        return users[_userAddress].followers;
+    /// @notice Update a page's nftId
+    /// @param _nftId the nft_id the page wants to use as a profile picture
+    function updatePage(uint256 _nftId, string memory _externalDataHash) external onlyValidAddress(msg.sender) {
+        pages[msg.sender].nftId = _nftId;
+        pages[msg.sender].externalDataHash = _externalDataHash;
     }
 
-    /// @notice Get all public posts of a user
-    /// @param _userAddress The address of the user
-    /// @return List of public posts
-    function getPublicPosts(address _userAddress) external view onlyValidAddress(_userAddress) returns (string[] memory) {
-        return users[_userAddress].publicPosts;
+    /// @notice Get page details
+    /// @param _pageAddress The address of the page
+    /// @return Page details
+    function getPage(address _pageAddress) external view onlyValidAddress(_pageAddress) returns (Page memory) {
+        return pages[_pageAddress];
     }
 }
