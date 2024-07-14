@@ -33,3 +33,37 @@ function test_create_entities() {
         .run();
     assert_equals(follower @ { } (@sum 1), 0);
 }
+
+function test_user_name() {
+    rell.test.tx()
+        .op(create_user("Alice", user))
+        .run();
+    assert_equals(get_user_name(user), "Alice#02466");
+    val users_result = get_users(0, 20);
+    assert_equals(users_result.pointer, 1);
+    assert_equals(users_result.users.size(), 1);
+    assert_true(users_result.users @* {} (.name).contains("Alice#02466"));
+}
+
+val charlie = rell.test.pubkeys.charlie;
+val alice = rell.test.pubkeys.alice;
+val bob = rell.test.pubkeys.bob;
+
+function test_follower_calculation() {
+    rell.test.tx()
+        .op(create_user("Alice", alice))
+        .op(create_page("Bob", "dora", bob))
+        .op(create_page("Charlie","ssr", charlie))
+        .run();
+
+    rell.test.tx()
+        .op(follow_user(alice, bob))
+        .op(follow_user(alice, charlie))
+        .run();
+
+    assert_true(is_following(alice, bob));
+    assert_true(is_following(alice, charlie));
+    assert_equals(get_following_count(alice), 2);
+
+    assert_equals(get_followers_count(bob), 1);
+}

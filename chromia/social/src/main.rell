@@ -52,3 +52,59 @@ operation unfollow_user(user_id: byte_array, unfollow_id: byte_array) {
   val unfollow = page @ { unfollow_id };
   delete follower @? { .page == unfollow, .follower == user };
 }
+
+query get_user_name(user_id: byte_array): text {
+  return user @ { user_id } ("%s#%s".format(.name, .id.to_hex().sub(0, 5)));
+}
+
+query get_followers_count(page_id: byte_array): integer {
+  return follower @ { .page == page @ { page_id } } (@sum 1);
+}
+
+query get_following_count(user_id: byte_array): integer {
+  return follower @ { .follower == user @ { user_id } } (@sum 1);
+}
+
+query is_following(my_id: byte_array, page_id: byte_array) =
+  exists(follower @? { .page.id == page_id, .follower.id == my_id });
+
+
+struct post_dto {
+  timestamp;
+  user: struct<page>;
+  content: text;
+}
+
+
+query get_posts(
+  page_id: byte_array,
+  pointer: integer,
+  n_posts: integer
+): (pointer: integer, posts: list<post_dto>) {
+  val posts = (page, follower, post, user) @* {
+    page.id == page_id,
+    follower.follower == user,
+    post.page == follower.page
+  } (
+    @sort_desc @omit post.rowid,
+    post_dto(
+        post.timestamp,
+        post.content,
+        user = post.page.to_struct()
+    )
+  ) offset pointer limit n_posts;
+
+  return (
+    pointer = pointer + posts.size(),
+    posts = posts
+  );
+}
+
+
+query get_users(pointer: integer, n_users: integer) {
+  val users = user @* {} (name = "%s#%s".format(.name, .id.to_hex().sub(0, 5)), id = .id) offset pointer limit n_users;
+  return (
+    pointer = pointer + users.size(),
+    users = users
+  );
+}
