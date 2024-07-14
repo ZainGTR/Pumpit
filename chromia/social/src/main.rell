@@ -1,1 +1,24 @@
 module;
+
+entity user {
+  key name;
+  key id: byte_array;
+}
+
+entity page {
+  key ticker: name;
+  key name;
+  key id: byte_array;
+}
+
+entity follower {
+  index page;
+  index follower: page;
+  key user, follower;
+}
+
+entity post {
+  timestamp = op_context.last_block_time;
+  index page;
+  content: text;
+}
