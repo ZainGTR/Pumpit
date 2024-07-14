@@ -1,0 +1,10 @@
+blockchains:
+  social:
+    module: main
+compile:
+  rellVersion: 0.13.5
+database:
+  schema: schema_social
+test:
+  modules:
+    - test
