@@ -32,37 +32,42 @@ operation create_page(ticker:name, name, pubkey) {
 }
 
 operation make_post(page_id: byte_array, content: text) {
+    require_is_signer(page_id);
+    require(content.size() <= 255, "A post cannot be longer than 255 letters");
+    require_page(page_id);
     create post(
         page @ { page_id },
         content
     );
 }
 
-operation follow_user(user_id: byte_array, page_id: byte_array) {
-    val user = user @ { user_id };
-    val page = page @ { page_id };
+operation follow_page(user_id: byte_array, page_id: byte_array) {
+    require_is_signer(user_id);
+    val user = require_user(user_id);
+    val page = require_page(page_id);
     create follower(
         page = page,
         follower = user
     );
 }
 
-operation unfollow_user(user_id: byte_array, unfollow_id: byte_array) {
-  val user = user @ { user_id };
-  val unfollow = page @ { unfollow_id };
-  delete follower @? { .page == unfollow, .follower == user };
+operation unfollow_page(user_id: byte_array, page_id: byte_array) {
+    require_is_signer(user_id);
+    val user = require_user(user_id);
+    val unfollow = require_page(page_id);
+    delete follower @? { .page == unfollow, .follower == user };
 }
 
 query get_user_name(user_id: byte_array): text {
-  return user @ { user_id } ("%s#%s".format(.name, .id.to_hex().sub(0, 5)));
+  return format_user(require_user(user_id));
 }
 
-query get_followers_count(page_id: byte_array): integer {
-  return follower @ { .page == page @ { page_id } } (@sum 1);
+query get_followers_count(page_id: pubkey): integer {
+  return follower @ { .page == require_page(page_id) } ( @sum 1 );
 }
 
 query get_following_count(user_id: byte_array): integer {
-  return follower @ { .follower == user @ { user_id } } (@sum 1);
+  return follower @ { .follower == require_user(user_id) } (@sum 1);
 }
 
 query is_following(my_id: byte_array, page_id: byte_array) =
@@ -77,12 +82,12 @@ struct post_dto {
 
 
 query get_posts(
-  page_id: byte_array,
+  user_id: byte_array,
   pointer: integer,
   n_posts: integer
 ): (pointer: integer, posts: list<post_dto>) {
-  val posts = (page, follower, post, user) @* {
-    page.id == page_id,
+  val posts = (user, follower, post) @* {
+    user.id == user_id,
     follower.follower == user,
     post.page == follower.page
   } (
@@ -102,9 +107,15 @@ query get_posts(
 
 
 query get_users(pointer: integer, n_users: integer) {
-  val users = user @* {} (name = "%s#%s".format(.name, .id.to_hex().sub(0, 5)), id = .id) offset pointer limit n_users;
+  val users = user @* {} (name = format_user($), id = .id) offset pointer limit n_users;
   return (
     pointer = pointer + users.size(),
     users = users
   );
 }
+
+
+function require_is_signer(pubkey) = require(op_context.is_signer(pubkey), "User must sign this operation");
+function require_user(id: byte_array) = require(user @? { id }, "User with id %b does not exist".format(id));
+function require_page(id: byte_array) = require(page @? { id }, "Page with id %b does not exist".format(id));
+function format_user(user) = "%s#%s".format(user.name, user.id.to_hex().sub(0, 5));
