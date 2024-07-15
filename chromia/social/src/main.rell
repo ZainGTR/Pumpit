@@ -1,14 +1,24 @@
 module;
+import lib.ft4.core.accounts.{ account, single_sig_auth_descriptor, create_account_with_auth };
+import lib.ft4.auth;
+
+@extend(auth.auth_handler)
+function () = auth.add_auth_handler(
+  flags = ["MySession"]
+);
+
 
 entity user {
   key name;
   key id: byte_array;
+  key account;
 }
 
 entity page {
   key ticker: name;
   key name;
   key id: byte_array;
+  key account;
 }
 
 entity follower {
@@ -24,26 +34,30 @@ entity post {
 }
 
 operation create_user(name, pubkey) {
-    create user(name, pubkey);
+    val account = create_account_with_auth(single_sig_auth_descriptor(pubkey, set(["A", "T", "MySession"])));
+    create user(name, id = pubkey, account = account);
 }
 
 operation create_page(ticker:name, name, pubkey) {
-    create page(ticker, name, pubkey);
+    val account = create_account_with_auth(single_sig_auth_descriptor(pubkey, set(["A", "T", "MySession"])));
+    create page(ticker = ticker, name, id = pubkey, account = account);
 }
 
-operation make_post(page_id: byte_array, content: text) {
-    require_is_signer(page_id);
+operation make_post(content: text) {
+    val account = auth.authenticate();
+    val page = page @ { account };
+    //require_is_signer(page_id);
     require(content.size() <= 255, "A post cannot be longer than 255 letters");
-    require_page(page_id);
+    //require_page(page_id);
     create post(
-        page @ { page_id },
-        content
+        page, content
     );
 }
 
-operation follow_page(user_id: byte_array, page_id: byte_array) {
-    require_is_signer(user_id);
-    val user = require_user(user_id);
+operation follow_page(page_id: byte_array) {
+    val account = auth.authenticate();
+    //require_is_signer(user_id);
+    val user = user @ { account };
     val page = require_page(page_id);
     create follower(
         page = page,
@@ -51,9 +65,10 @@ operation follow_page(user_id: byte_array, page_id: byte_array) {
     );
 }
 
-operation unfollow_page(user_id: byte_array, page_id: byte_array) {
-    require_is_signer(user_id);
-    val user = require_user(user_id);
+operation unfollow_page(page_id: byte_array) {
+    val account = auth.authenticate();
+    //require_is_signer(user_id);
+    val user = user @ { account };
     val unfollow = require_page(page_id);
     delete follower @? { .page == unfollow, .follower == user };
 }
