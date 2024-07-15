@@ -112,3 +112,65 @@ function test_create_entities_with_sig() {
     assert_false(is_following(alice, bob));
     assert_equals(follower @ { } (@sum 1), 0);
 }
+
+function test_follower_calculation() {
+    rell.test.tx()
+        .op(create_user("Alice", user))
+        .op(create_page("Bob","BBB", bob))
+        .op(create_page("CCC", "MemeCoin", charlie))
+        .run();
+    
+    rell.test.tx()
+        .op(follow_page(alice, bob))
+        .op(follow_page(alice, charlie))
+        .sign(alice_kp)                   
+        .run();
+    
+}
+
+function test_pagination_of_posts() {
+    rell.test.tx()
+        .op(create_user("Alice", alice))
+        .op(create_page("Bob","BBB",  bob)).run();
+    rell.test.tx()
+        .op(follow_page(alice, bob))
+        .sign(alice_kp)                // <--
+        .run();
+
+    for (i in range(5)) {
+        rell.test.tx().op(make_post(bob, "Content %d".format(i))).sign(bob_kp).run(); // <--
+    }
+    
+}
+
+val charlie_kp = rell.test.keypairs.charlie;
+
+function test_input_verification() {
+    rell.test.tx()
+        .op(create_user("Alice", alice))
+        .op(create_page("Bob", "BBB", bob)).run();
+
+    // Bob cannot impersonate Alice
+    rell.test.tx()
+        .op(follow_page(alice, bob))
+        .sign(bob_kp)
+        .run_must_fail();
+    rell.test.tx()
+        .op(make_post(alice, "My malicious post"))
+        .sign(bob_kp)
+        .run_must_fail();
+
+    // Alice cannot follow non-existing Charlie
+    val f1 = rell.test.tx()
+        .op(follow_page(alice, charlie))
+        .sign(alice_kp)
+        .run_must_fail();
+    assert_true(f1.message.contains("does not exist"));
+
+    // Charlie cannot create a post since he does not exist
+    val f2 = rell.test.tx()
+        .op(make_post(charlie, "My secret post"))
+        .sign(charlie_kp)
+        .run_must_fail();
+    assert_true(f2.message.contains("does not exist"));
+}
