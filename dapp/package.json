@@ -10,9 +10,11 @@
   },
   "dependencies": {
     "@bnb-chain/greenfield-js-sdk": "^2.1.1",
+    "@chromia/ft4": "0.8.0",
     "ethers": "^6.13.1",
     "next": "14.1.0",
     "next-cloudinary": "^6.6.2",
+    "postchain-client": "^1.17.0",
     "react": "^18.3",
     "react-dom": "^18.3",
     "thirdweb": "^5"

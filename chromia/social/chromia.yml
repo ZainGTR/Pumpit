@@ -1,6 +1,10 @@
 blockchains:
   social:
     module: main
+    moduleArgs:
+      lib.ft4.core.auth:
+        evm_signatures_authorized_operations:
+          - register_user
     test:
       modules:
         - test

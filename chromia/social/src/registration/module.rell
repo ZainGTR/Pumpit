@@ -1,0 +1,11 @@
+module;
+
+import ^.social.*;
+import lib.ft4.accounts.strategies.open;
+import lib.ft4.accounts.strategies.{ register_account };
+
+operation register_user(name, ticker:name) {
+    val account = register_account();
+    create page (ticker, name, account.id, account );
+    //create follower ( page = user, follower = user );
+}
