@@ -14,28 +14,24 @@ export type tokendataProps = {
 
 const TokenCard = (props: { tokendata: tokendataProps }) => {
   return (
-    <div className="flex justify-start text-sm p-2 gap-4 min-w-[450px] bg-slate-300 rounded-lg">
-      <div className="">
-        <Image
-          src={props.tokendata.tokenImg}
-          alt={props.tokendata.tokenName}
-          height={128}
-          width={128}
-        />
-      </div>
-      <div className="min-w-72">
-        <div className="flex justify-between items-center">
-          <div className="text-lg font-bold">
-            {props.tokendata.tokenName}({props.tokendata.tokenSymbol})
-          </div>
-          <div className="">by {props.tokendata.tokenDev}</div>
+    <div className="flex justify-between items-center text-sm p-2 bg-slate-300 rounded-sm">
+      <div className="flex gap-2 items-center">
+        <div className="">
+          <Image
+            src={props.tokendata.tokenImg}
+            alt={props.tokendata.tokenName}
+            height={32}
+            width={32}
+          />
         </div>
-        <div>badges</div>
-        <div>MarketCap: {props.tokendata.tokenMarketCap}</div>
-        <div>Followers: {props.tokendata.followers}</div>
-        <div>Trades: {props.tokendata.trades}</div>
-        <div>{props.tokendata.tokenDesc}</div>
+        <div className="text-md font-bold">
+          {props.tokendata.tokenName}({props.tokendata.tokenSymbol})
+        </div>
       </div>
+      <div>MarketCap: {props.tokendata.tokenMarketCap}</div>
+      <div>Followers: {props.tokendata.followers}</div>
+      <div>Trades: {props.tokendata.trades}</div>
+      <div>{props.tokendata.tokenDesc}</div>
     </div>
   );
 };

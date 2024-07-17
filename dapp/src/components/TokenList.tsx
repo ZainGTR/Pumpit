@@ -50,9 +50,9 @@ const TokenList = () => {
   ];
 
   return (
-    <div className="w-full flex-col gap-4 bg-slate-600">
-      <div className="bg-white flex">filters</div>
-      <div className="flex flex-wrap gap-10 p-4">
+    <div className="w-full flex-col gap-2 rounded-md shadow-md">
+      <div className="bg-white flex p-2">filters</div>
+      <div className="flex flex-col justify-start">
         {alldata.map((token) => (
           <div key={token.tokenId}>
             <TokenCard tokendata={token} />

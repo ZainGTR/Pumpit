@@ -18,7 +18,7 @@ const postData = {
 
 const Postmini = () => {
   return (
-    <div className="flex flex-col gap-2  p-2 shadow-md">
+    <div className="flex flex-col gap-2  p-2 shadow-md test-sm">
       <div className="flex justify-between">
         <div className="flex items-center gap-2 font-semibold">
           <Image
@@ -34,7 +34,7 @@ const Postmini = () => {
       <div className="flex gap-2">
         <div
           className={
-            postData.hasImage ? "w-full relative  min-h-24" : "w-full relative"
+            postData.hasImage ? "w-full relative  min-h-12" : "w-full relative"
           }
         >
           <Image
@@ -44,7 +44,7 @@ const Postmini = () => {
             className="object-fit rounded-md"
           />
         </div>
-        <p>{postData.postText}</p>
+        <p className="text-sm">{postData.postText}</p>
       </div>
       <div className="flex items-center justify-between text-sm">
         <div className="flex gap-2">

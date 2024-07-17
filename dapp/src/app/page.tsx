@@ -122,26 +122,21 @@ export default function Home() {
   return (
     <div className="">
       {/* TOP */}
-      <div className="w-full flex flex-col items-center gap-4 p-4">
+      <div className="w-full flex flex-col gap-4 p-4">
         {/* stats */}
-        <div className="flex items-center gap-4 text-sm">
+        <div className="flex self-center gap-4 text-sm">
           <p>Tokens: 995</p>
           <p>Volume: 6,552,104,201 USD </p>
           <p>24H: 3,365,120 USD</p>
           <p>7 Days: 18,249,962 USD</p>
         </div>
         {/* stats */}
-        <div className="flex items-center gap-8">
+        <div className="flex justify-between">
           <TopTokens title="Winners" tokens={winners} />
           <TopTokens title="Loosers" tokens={loosers} />
           <TopTokens title="Recent" tokens={recent} />
         </div>
-        <div className="flex items-center gap-8">
-          <Postmini />
-          <Postmini />
-          <Postmini />
-          <Postmini />
-        </div>
+
         <div>
           <div className="flex p-2 bg-slate-200 items-center rounded-lg lg:hidden">
             <input
@@ -155,10 +150,16 @@ export default function Home() {
       </div>
       {/* TOP */}
       {/* BOT */}
-      <div className="flex flex-col items-center gap-8">
+      <div className="flex gap-8">
         {/* Token list */}
-        <div className="">
+        <div className="w-[70%]">
           <TokenList />
+        </div>
+        <div className="flex flex-col gap-4 w-[30%]">
+          <Postmini />
+          <Postmini />
+          <Postmini />
+          <Postmini />
         </div>
         {/* Token List */}
       </div>

@@ -18,7 +18,6 @@ import {
   useEffect,
   useState,
 } from "react";
-import { getRandomUserName } from "./randomNames";
 
 // Create context for Chromia session
 const ChromiaContext = createContext<Session | undefined>(undefined);
@@ -50,6 +49,7 @@ export function ContextProvider({ children }: { children: ReactNode }) {
 
       // 2. Connect with MetaMask
       const evmKeyStore = await createWeb3ProviderEvmKeyStore(window.ethereum);
+      //console.log(evmKeyStore);
 
       // 3. Get all accounts associated with evm address
       const evmKeyStoreInteractor = createKeyStoreInteractor(
@@ -57,6 +57,7 @@ export function ContextProvider({ children }: { children: ReactNode }) {
         evmKeyStore
       );
       const accounts = await evmKeyStoreInteractor.getAccounts();
+      console.log(accounts);
 
       if (accounts.length > 0) {
         console.log(accounts[0].id);
@@ -86,7 +87,7 @@ export function ContextProvider({ children }: { children: ReactNode }) {
           }),
           {
             name: "register_user",
-            args: getRandomUserName(),
+            args: ["test"],
           }
         );
         setSession(session);
