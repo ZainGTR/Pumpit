@@ -8,19 +8,28 @@ function () = auth.add_auth_handler(
   flags = ["MySession"]
 );
 
+entity token {
+  key ticker: name;
+  key address: text;
+  index dev: byte_array;
+  created: timestamp = op_context.last_block_time;
+}
 
+// todo achievements
 entity user {
-  key name;
   key id: byte_array;
+  key name;
   key account;
+  joined:timestamp = op_context.last_block_time;
 }
 
 entity page {
-  key ticker: name;
-  key name;
   key id: byte_array;
-  key account;
+  key token;
+  index owner: user;
+  created:timestamp = op_context.last_block_time;
 }
+
 
 entity follower {
   index page;
@@ -29,35 +38,60 @@ entity follower {
 }
 
 entity post {
-  timestamp = op_context.last_block_time;
+  key id: byte_array;
   index page;
-  content: text;
+  mutable media:text;
+  mutable upvotes:integer = 0;
+  mutable downvotes:integer = 0;
+  mutable views:integer = 0;
+  mutable content: text;
+  created:timestamp = op_context.last_block_time;
 }
 
-operation create_user(name, pubkey) {
-    val account = create_account_with_auth(single_sig_auth_descriptor(pubkey, set(["A", "T", "MySession"])));
-    create user(name, id = pubkey, account = account);
+entity reply {
+  key id: byte_array;
+  index parent_id: byte_array;
+  post:boolean;
+  index writer: user;
+  mutable upvotes:integer = 0;
+  mutable downvotes:integer = 0;
+  mutable views:integer = 0;
+  mutable content: text;
+  created:timestamp = op_context.last_block_time;
 }
 
-operation create_page(ticker:name, name, pubkey) {
-    val account = create_account_with_auth(single_sig_auth_descriptor(pubkey, set(["A", "T", "MySession"])));
-    create page(ticker = ticker, name, id = pubkey, account = account);
-}
 
-operation make_post(content: text) {
+operation create_page() {
     val account = auth.authenticate();
-    val page = page @ { account };
-    //require_is_signer(page_id);
+    val user = user @ { account };
+    val token = token @ { account.id };
+    val id = (token.address).hash();
+    create page(id = id, token = token, owner = user, created = op_context.last_block_time);
+}
+
+operation make_reply(content: text, parent_id:byte_array, post:boolean) {
+    val account = auth.authenticate();
+    require(content.size() <= 160, "A reply cannot be longer than 160 letters");
+    val user = user @ { account };
+    val id  = (content, account.id, parent_id).hash();
+    create reply(
+        id = id, parent_id = parent_id, post = post, writer = user, content = content, created = op_context.last_block_time
+    );
+}
+
+operation make_post(page_id:byte_array, content: text, media:text) {
+    val account = auth.authenticate();
+    val user = user @ { account };
+    val page = page @ { .id == page_id, .owner == user };
     require(content.size() <= 255, "A post cannot be longer than 255 letters");
-    //require_page(page_id);
+    val id = (content, page_id, account.id).hash();
     create post(
-        page, content
+        id = id, page = page, media = media, content = content, created = op_context.last_block_time
     );
 }
 
 operation follow_page(page_id: byte_array) {
     val account = auth.authenticate();
-    //require_is_signer(user_id);
     val user = user @ { account };
     val page = require_page(page_id);
     create follower(
@@ -68,7 +102,6 @@ operation follow_page(page_id: byte_array) {
 
 operation unfollow_page(page_id: byte_array) {
     val account = auth.authenticate();
-    //require_is_signer(user_id);
     val user = user @ { account };
     val unfollow = require_page(page_id);
     delete follower @? { .page == unfollow, .follower == user };
@@ -109,7 +142,7 @@ query get_posts(
   } (
     @sort_desc @omit post.rowid,
     post_dto(
-        post.timestamp,
+        post.created,
         post.content,
         user = post.page.to_struct()
     )

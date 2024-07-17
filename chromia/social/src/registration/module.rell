@@ -4,8 +4,9 @@ import ^.social.*;
 import lib.ft4.accounts.strategies.open;
 import lib.ft4.accounts.strategies.{ register_account };
 
-operation register_user(name, ticker:name) {
+operation register_user(name) {
     val account = register_account();
-    create page (ticker, name, account.id, account );
-    //create follower ( page = user, follower = user );
+    create user (id = account.id, name, account = account, joined = op_context.last_block_time );
+    create token (ticker = "BBB", address = "", dev = account.id, created = op_context.last_block_time);
+    
 }

@@ -131,7 +131,7 @@ function test_evm_registration() {
     val session1_auth_desc = single_sig_auth_descriptor(alice_session_1.pub, set(["MySession"]));
 
     val strategy_op = ras_open(alice_auth_desc, session1_auth_desc);
-    val register_op = register_user("Alice", "AAA");
+    val register_op = register_user("Alice");
 
     val message = get_register_account_message(
         strategy_op.to_gtx_operation(),
@@ -146,21 +146,22 @@ function test_evm_registration() {
         .sign(alice_session_1)
         .run();
 
-    assert_equals(page @ { } ( @sum 1 ), 1);
+    assert_equals(user @ { } ( @sum 1 ), 1);
+   
 
     
-        // Make a post using the session keypair
+        
     rell.test.tx()
         .op(ft_auth_operation_for(alice_session_1.pub))
-        .op(make_post("My first post"))
+        .op(create_page())
         .sign(alice_session_1)
         .run();
-    assert_equals(post @ { } ( @sum 1 ), 1);
+    assert_equals(page @ { } ( @sum 1 ), 1);
 
 
-        // Start a new session
-    val alice_session_2 = rell.test.keypairs.bob;
-    val session_auth_desc = single_sig_auth_descriptor(alice_session_2.pub, set(["MySession"]));
+    //     // Start a new session
+    // val alice_session_2 = rell.test.keypairs.bob;
+    // val session_auth_desc = single_sig_auth_descriptor(alice_session_2.pub, set(["MySession"]));
 
     // // Add a session token
     // rell.test.tx()

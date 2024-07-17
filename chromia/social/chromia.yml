@@ -9,7 +9,7 @@ blockchains:
       modules:
         - test
 compile:
-  rellVersion: 0.13.5
+  rellVersion: 0.13.14
 database:
   schema: schema_social
 libs:
