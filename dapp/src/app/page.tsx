@@ -152,10 +152,10 @@ export default function Home() {
       {/* BOT */}
       <div className="flex gap-8">
         {/* Token list */}
-        <div className="w-[70%]">
+        <div className="w-[80%]">
           <TokenList />
         </div>
-        <div className="flex flex-col gap-4 w-[30%]">
+        <div className="flex flex-col gap-4 w-[20%]">
           <Postmini />
           <Postmini />
           <Postmini />

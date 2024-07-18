@@ -14,8 +14,8 @@ export type tokendataProps = {
 
 const TokenCard = (props: { tokendata: tokendataProps }) => {
   return (
-    <div className="flex justify-between items-center text-sm p-2 bg-slate-300 rounded-sm">
-      <div className="flex gap-2 items-center">
+    <tr>
+      <td className="flex gap-2 items-center">
         <div className="">
           <Image
             src={props.tokendata.tokenImg}
@@ -27,12 +27,12 @@ const TokenCard = (props: { tokendata: tokendataProps }) => {
         <div className="text-md font-bold">
           {props.tokendata.tokenName}({props.tokendata.tokenSymbol})
         </div>
-      </div>
-      <div>MarketCap: {props.tokendata.tokenMarketCap}</div>
-      <div>Followers: {props.tokendata.followers}</div>
-      <div>Trades: {props.tokendata.trades}</div>
-      <div>{props.tokendata.tokenDesc}</div>
-    </div>
+      </td>
+      <td>MarketCap: {props.tokendata.tokenMarketCap}</td>
+      <td>Followers: {props.tokendata.followers}</td>
+      <td>Trades: {props.tokendata.trades}</td>
+      <td>{props.tokendata.tokenDesc}</td>
+    </tr>
   );
 };
 

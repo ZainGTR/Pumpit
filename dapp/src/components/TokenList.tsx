@@ -1,65 +1,57 @@
+import Image from "next/image";
 import TokenCard, { tokendataProps } from "./TokenCard";
+import { alldata } from "@/utils/Temp";
 
 const TokenList = () => {
-  const tokeninfo: tokendataProps = {
-    tokenId: "0xssdd",
-    tokenImg: "/tokens/factory.jpeg",
-    tokenDev: "Jhonny",
-    tokenName: "factory token",
-    tokenSymbol: "FUE",
-    tokenDesc: "a token for factory meme community",
-    tokenMarketCap: 1000.125,
-    followers: 52,
-    trades: 215,
-  };
-
-  const alldata = [
-    {
-      tokenId: "0xssdd",
-      tokenImg: "/tokens/factory.jpeg",
-      tokenDev: "Jhonny",
-      tokenName: "factory token",
-      tokenSymbol: "FUE",
-      tokenDesc: "a token for factory meme community",
-      tokenMarketCap: 1000.125,
-      followers: 52,
-      trades: 215,
-    },
-    {
-      tokenId: "0xggfdd",
-      tokenImg: "/tokens/factory2.jpeg",
-      tokenDev: "Lamma",
-      tokenName: "Smart",
-      tokenSymbol: "SMT",
-      tokenDesc: "a token for smart community",
-      tokenMarketCap: 556.58,
-      followers: 1650,
-      trades: 66980,
-    },
-    {
-      tokenId: "0xetrfdd",
-      tokenImg: "/tokens/factory2.jpeg",
-      tokenDev: "Lamma",
-      tokenName: "Smart",
-      tokenSymbol: "SMT",
-      tokenDesc: "a token for smart community",
-      tokenMarketCap: 556.58,
-      followers: 1650,
-      trades: 66980,
-    },
-  ];
-
   return (
-    <div className="w-full flex-col gap-2 rounded-md shadow-md">
-      <div className="bg-white flex p-2">filters</div>
-      <div className="flex flex-col justify-start">
+    <table className="table-auto w-full text-sm rounded-md shadow-md text-left">
+      <thead className="">
+        <tr className="border-b border-slate-500">
+          <th className="p-4">Token</th>
+          <th>Price</th>
+          <th>24H</th>
+          <th>Trades</th>
+          <th>Liquidity</th>
+          <th>Volume</th>
+          <th>MarketCap</th>
+          <th>Created</th>
+          <th>Community</th>
+          <th>Score</th>
+        </tr>
+      </thead>
+      <tbody>
         {alldata.map((token) => (
-          <div key={token.tokenId}>
-            <TokenCard tokendata={token} />
-          </div>
+          <tr key={token.tokenId} className="border-b border-slate-300">
+            <td className="flex gap-2 items-center p-2">
+              <Image
+                src={token.tokenImg}
+                alt={token.tokenName}
+                height={32}
+                width={32}
+                className="rounded-full"
+              />
+
+              <div>
+                <p>
+                  {token.tokenName}({token.tokenSymbol})
+                </p>
+                <p>{token.tokenId}</p>
+              </div>
+            </td>
+
+            <td>{token.tokenPrice}</td>
+            <td>{token.token24h}</td>
+            <td>{token.trades}</td>
+            <td>{token.liquidity}</td>
+            <td>{token.totalvol}</td>
+            <td>{token.tokenMarketCap}</td>
+            <td>{token.created}</td>
+            <td>{token.followers}</td>
+            <td>75/100</td>
+          </tr>
         ))}
-      </div>
-    </div>
+      </tbody>
+    </table>
   );
 };
 
