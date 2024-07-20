@@ -124,7 +124,7 @@ export default function Home() {
       {/* TOP */}
       <div className="w-full flex flex-col gap-4 p-4">
         {/* stats */}
-        <div className="flex self-center gap-4 text-sm">
+        <div className="flex self-center gap-4 text-sm ">
           <p>Tokens: 995</p>
           <p>Volume: 6,552,104,201 USD </p>
           <p>24H: 3,365,120 USD</p>
