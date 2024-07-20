@@ -13,7 +13,8 @@ contract TokenSwap {
 
     ERC20Token public token;
     bool public swapEnabled;
-    uint256 initRate = 33333333;
+    uint256 SwapRate = 33333333;
+    uint256 tokenBalance = 0;
     
 
     event TokenCreated(address indexed tokenAddress, uint256 totalTokens);
@@ -33,8 +34,9 @@ contract TokenSwap {
         // make first buy (dev buy order)
         if (msg.value > 0) {
             uint256 ethAmount = msg.value;
-            uint256 devTokens = ethAmount.mul(33333333);
+            uint256 devTokens = ethAmount.mul(SwapRate);
             token.transfer(_creator, devTokens);
+            tokenBalance += devTokens;
         }
     }
 
@@ -44,6 +46,7 @@ contract TokenSwap {
         uint256 tokensToReceive = getTokenAmountForEth(msg.value);
         require(token.balanceOf(address(this)) >= tokensToReceive, "Not enough tokens in the contract");
         token.transfer(msg.sender, tokensToReceive);
+        tokenBalance += tokensToReceive;
         emit EthToTokenSwapped(msg.sender, msg.value, tokensToReceive);
         if (address(this).balance >= MAX_ETH_BALANCE) {
             swapEnabled = false;
@@ -59,6 +62,7 @@ contract TokenSwap {
         require(address(this).balance >= ethToReceive, "Not enough ETH in the contract");
         require(token.transferFrom(msg.sender, address(this), tokenAmount), "Token transfer failed");
         payable(msg.sender).transfer(ethToReceive);
+        tokenBalance -= tokenAmount;
         emit TokenToEthSwapped(msg.sender, tokenAmount, ethToReceive);
 
         if (address(this).balance >= MAX_ETH_BALANCE) {
@@ -72,16 +76,16 @@ contract TokenSwap {
         emit UpgradeTriggered();
         // Here we implement the migration to frax swap dex and move
         // all the liquidity to the dex and burn the claiming tokens.
-        uint256 tokenReserve = token.balanceOf(address(this));
-        uint256 ethReserve = address(this).balance;
+        // uint256 tokenReserve = tokenBalance;
+        // uint256 ethReserve = address(this).balance;
     }
 
     /// @notice Calculates the amount of tokens for a given amount of ETH based on current reserve ratios
     /// @param ethAmount The amount of ETH
     /// @return The amount of tokens
     function getTokenAmountForEth(uint256 ethAmount) public view returns (uint256) {
-        uint256 tokenReserve = token.balanceOf(address(this));
-        uint256 ethReserve = address(this).balance.sub(ethAmount); // subtract ethAmount as it will be added to the reserve
+        uint256 tokenReserve = tokenBalance;
+        uint256 ethReserve = address(this).balance.add(ethAmount); // add ethAmount as it will be added to the reserve
         return ethAmount.mul(tokenReserve).div(ethReserve);
     }
 
@@ -89,13 +93,20 @@ contract TokenSwap {
     /// @param tokenAmount The amount of tokens
     /// @return The amount of ETH
     function getEthAmountForToken(uint256 tokenAmount) public view returns (uint256) {
-        uint256 tokenReserve = token.balanceOf(address(this)).sub(tokenAmount); // subtract tokenAmount as it will be added to the reserve
+        uint256 tokenReserve = tokenBalance.add(tokenAmount); // add tokenAmount as it will be added to the reserve
         uint256 ethReserve = address(this).balance;
         return tokenAmount.mul(ethReserve).div(tokenReserve);
     }
 
     function getTokenAddress() public view  returns (address) {
         return address(token);
+    }
+
+    function getLiquidity() public view  returns (uint256, uint256) {
+        uint256 tokenLiq = tokenBalance;
+        uint256 ethLiq = address(this).balance;
+
+        return (tokenLiq, ethLiq);
     }
 
 }
