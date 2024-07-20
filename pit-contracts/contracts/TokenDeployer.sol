@@ -12,12 +12,11 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 contract TokenDeployer {
     using SafeMath for uint256;
 
-    uint256 public fixedFee = 0.025 ether; // small creation fees to support pumpit devs and limit spams.
-    uint256 devRate = 33333333;
+    uint256 public fixedFee = 0.005 ether; // small creation fees to support pumpit devs and limit spams.
     uint256 constant DEFAULT_SUPPLY = 1000000000 ether;
     address dev;
 
-    event TokenCreated(address indexed tokenAddress, address indexed creator, uint256 devTokens, uint256 totalTokens, address vault, address dex, address community);
+    event TokenCreated(address indexed tokenAddress, address indexed creator, uint256 totalTokens, address vault, address dex, address community);
 
     struct TokenInfo {
         address tokenAddress;
@@ -26,7 +25,6 @@ contract TokenDeployer {
         address dexAddress;
         address community;
         uint256 totalTokens;
-        uint256 devTokens;
     }
 
     mapping(address => TokenInfo[]) public userTokens;
@@ -50,12 +48,12 @@ contract TokenDeployer {
         TokenSwap newToken = new TokenSwap {value:devTokenValue} (name, symbol, DEFAULT_SUPPLY, msg.sender);
         address tokenAddress = newToken.getTokenAddress();
         address dexAddress = address(newToken);
-        uint256 devTokens = devTokenValue.mul(devRate);
+        
                
         
 
-        userTokens[msg.sender].push(TokenInfo(tokenAddress, msg.sender, address(0), dexAddress, address(0), DEFAULT_SUPPLY, devTokens));
-        emit TokenCreated(tokenAddress, msg.sender, devTokens, DEFAULT_SUPPLY, address(0), dexAddress, address(0));
+        userTokens[msg.sender].push(TokenInfo(tokenAddress, msg.sender, address(0), dexAddress, address(0), DEFAULT_SUPPLY));
+        emit TokenCreated(tokenAddress, msg.sender, DEFAULT_SUPPLY, address(0), dexAddress, address(0));
 
         return dexAddress;
     }
