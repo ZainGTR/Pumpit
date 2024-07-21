@@ -1,11 +1,11 @@
 "use client";
 import { client } from "@/app/client";
-import { defineChain } from "thirdweb";
+import { Testnetchain } from "@/utils/Constants";
 import { ConnectButton, lightTheme } from "thirdweb/react";
 import { createWallet, walletConnect } from "thirdweb/wallets";
 
 const ConnectComponent = () => {
-  const chainId = defineChain(2522);
+  const chainId = Testnetchain;
   const wallets = [
     createWallet("io.metamask"),
     createWallet("com.coinbase.wallet"),
