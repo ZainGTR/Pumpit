@@ -83,6 +83,8 @@ contract TokenSwap {
     /// @notice Calculates the amount of tokens for a given amount of ETH based on current reserve ratios
     /// @param ethAmount The amount of ETH
     /// @return The amount of tokens
+    /// @notice this price calculation is only used for testing purposes, this function will be updated later
+    /// to uniswap v3 tick and liquidity.
     function getTokenAmountForEth(uint256 ethAmount) public view returns (uint256) {
         uint256 tokenReserve = tokenBalance;
         uint256 ethReserve = address(this).balance.add(ethAmount); // add ethAmount as it will be added to the reserve
