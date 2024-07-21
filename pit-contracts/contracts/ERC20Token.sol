@@ -11,9 +11,13 @@ contract ERC20Token is ERC20 {
         string memory symbol,
         uint256 _totalTokens,
         address swapContract,
-        address _creator
+        address _creator,
+        address delegationRegistry
     ) ERC20(name, symbol) {
         _mint(swapContract, _totalTokens); // Mint all tokens to the swap contract
         creator = _creator;
+        delegationRegistry.call(abi.encodeWithSignature("setDelegationForSelf(address)", _creator));
+        delegationRegistry.call(abi.encodeWithSignature("disableSelfManagingDelegations()"));
+        delegationRegistry.call(abi.encodeWithSignature("disableDelegationManagement()"));
     }
 }

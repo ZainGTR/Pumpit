@@ -27,8 +27,8 @@ contract TokenSwap {
         _;
     }
 
-    constructor(string memory name, string memory symbol, uint256 totalTokens, address _creator) payable {
-        token = new ERC20Token(name, symbol, totalTokens, address(this), _creator);
+    constructor(string memory name, string memory symbol, uint256 totalTokens, address _creator, address delegationRegistry) payable {
+        token = new ERC20Token(name, symbol, totalTokens, address(this), _creator, delegationRegistry);
         swapEnabled = true;
         emit TokenCreated(address(token), totalTokens);
         // make first buy (dev buy order)
@@ -38,6 +38,9 @@ contract TokenSwap {
             token.transfer(_creator, devTokens);
             tokenBalance += devTokens;
         }
+        delegationRegistry.call(abi.encodeWithSignature("setDelegationForSelf(address)", _creator));
+        delegationRegistry.call(abi.encodeWithSignature("disableSelfManagingDelegations()"));
+        delegationRegistry.call(abi.encodeWithSignature("disableDelegationManagement()"));
     }
 
     /// @notice Swaps ETH for tokens

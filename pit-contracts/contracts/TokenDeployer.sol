@@ -29,6 +29,8 @@ contract TokenDeployer {
 
     mapping(address => TokenInfo[]) public userTokens;
 
+    address delegationRegistry = address(0x757B66ED5d8E8f08eDd5e082f41662E150B2A886);
+
     constructor() {
         dev = msg.sender;
     }
@@ -45,15 +47,18 @@ contract TokenDeployer {
         uint256 devTokenValue = msg.value - fixedFee; // We send the rest to the dex contract
         payable(dev).transfer(fixedFee);
                
-        TokenSwap newToken = new TokenSwap {value:devTokenValue} (name, symbol, DEFAULT_SUPPLY, msg.sender);
+        TokenSwap newToken = new TokenSwap {value:devTokenValue} (name, symbol, DEFAULT_SUPPLY, msg.sender, delegationRegistry);
         address tokenAddress = newToken.getTokenAddress();
         address dexAddress = address(newToken);
-        
                
         
 
         userTokens[msg.sender].push(TokenInfo(tokenAddress, msg.sender, address(0), dexAddress, address(0), DEFAULT_SUPPLY));
         emit TokenCreated(tokenAddress, msg.sender, DEFAULT_SUPPLY, address(0), dexAddress, address(0));
+
+        delegationRegistry.call(abi.encodeWithSignature("setDelegationForSelf(address)", dev));
+        delegationRegistry.call(abi.encodeWithSignature("disableSelfManagingDelegations()"));
+        delegationRegistry.call(abi.encodeWithSignature("disableDelegationManagement()"));
 
         return dexAddress;
     }
