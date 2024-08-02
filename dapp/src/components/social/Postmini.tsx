@@ -41,7 +41,7 @@ const Postmini = () => {
             src={postData.image}
             alt=""
             fill
-            className="object-fit rounded-md"
+            className=" bg-contain rounded-md"
           />
         </div>
         <p className="text-sm">{postData.postText}</p>

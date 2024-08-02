@@ -44,7 +44,7 @@ export function ContextProvider({ children }: { children: ReactNode }) {
       const client = await createClient({
         nodeUrlPool: "http://localhost:7740",
         blockchainRid:
-          "833C1CEC66C65647236F9E6B69BFAFD79C1704E3708462CC81FD5E4A8474E230",
+          "45C6E7BC991F7712F957DE067DFFCF8AF7D4493706DF9BB15B88B2343C17BDE9",
       });
 
       // 2. Connect with MetaMask
@@ -57,10 +57,10 @@ export function ContextProvider({ children }: { children: ReactNode }) {
         evmKeyStore
       );
       const accounts = await evmKeyStoreInteractor.getAccounts();
-      console.log(accounts);
+      console.log(accounts[0].id);
 
       if (accounts.length > 0) {
-        console.log(accounts[0].id);
+        //console.log(accounts[0].id);
         // 4. Start a new session
         const { session } = await evmKeyStoreInteractor.login({
           accountId: accounts[0].id,

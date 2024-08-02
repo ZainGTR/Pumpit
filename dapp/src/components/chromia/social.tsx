@@ -32,10 +32,10 @@ export default function NewsFeed() {
     "get_user_name",
     accountId ? { user_id: accountId } : undefined
   );
-  const { result: followersCount } = useQuery<number>(
-    "get_followers_count",
-    accountId ? { user_id: accountId } : undefined
-  );
+  // const { result: followersCount } = useQuery<number>(
+  //   "get_followers_count",
+  //   accountId ? { user_id: accountId } : undefined
+  // );
 
   const { result: followingCount } = useQuery<number>(
     "get_following_count",
@@ -64,10 +64,10 @@ export default function NewsFeed() {
 
         <div className="flex text-center">
           {/* Followers Box */}
-          <div className="bg-white m-1 p-2 rounded-lg shadow">
+          {/* <div className="bg-white m-1 p-2 rounded-lg shadow">
             <h3 className="text-lg font-semibold">Followers</h3>
             <p className="text-3xl font-bold">{followersCount}</p>
-          </div>
+          </div> */}
 
           {/* Following Box */}
           <div className="bg-white m-1 p-2 rounded-lg shadow">
